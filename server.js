@@ -68,10 +68,10 @@ app.put('/api/todos/:id', async(req, res) => {
             UPDATE todos
             SET complete = $1
             WHERE id = $2
-            returning *`,
+            RETURNING *`,
         [req.body.complete, req.params.id]
         );
-        res.json(result.rows);
+        res.json(result.rows[0]);
     }
     catch (err) {
         console.log(err); 
@@ -80,6 +80,25 @@ app.put('/api/todos/:id', async(req, res) => {
         });
     }
 });
+
+app.delete('api/todos/:id', async(req, res) => {
+    try {
+        const result = await client.query(`
+            DELETE from todos 
+            WHERE id = $1
+            RETURNING *`,
+        [req.params.id]
+        );
+        res.json(result.rows[0]);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            error: err.message || err
+        });
+    }
+});
+
 
 // Start the server
 app.listen(PORT, () => {
