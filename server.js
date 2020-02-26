@@ -6,18 +6,19 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const client = require('./lib/client');
+
 // Initiate database connection
 client.connect();
 
 // Application Setup
 const app = express();
 const PORT = process.env.PORT;
-app.use(morgan('dev')); // http logging
-app.use(cors()); // enable CORS request
-app.use(express.static('public')); // server files from /public folder
-app.use(express.json()); // enable reading incoming json data
-// API Routes
+app.use(morgan('dev'));
+app.use(cors());
+app.use(express.static('public'));
+app.use(express.json());
 
+// API Routes
 app.use(express.urlencoded({ extended: true }));
 
 // *** TODOS ***
@@ -27,8 +28,9 @@ app.get('/api/todos', async(req, res) => {
     try {
         // make a sql query using pg.Client() to select * from todos
         const result = await client.query(`
-            SELECT * from todos;
-        `);
+            SELECT * from todos
+            ORDER BY $1;
+        `, [req.body.id]);
 
         // respond to the client with that data
         res.json(result.rows);
@@ -58,7 +60,26 @@ app.post('/api/todos', async(req, res) => {
             error: err.message || err
         });
     }
-})
+});
+
+app.put('/api/todos/:id', async(req, res) => {
+    try {
+        const result = await client.query(`
+            UPDATE todos
+            SET complete = $1
+            WHERE id = $2
+            returning *`,
+        [req.body.complete, req.params.id]
+        );
+        res.json(result.rows);
+    }
+    catch (err) {
+        console.log(err); 
+        res.status(500).json({
+            error: err.message || err
+        });
+    }
+});
 
 // Start the server
 app.listen(PORT, () => {
