@@ -59,8 +59,9 @@ app.get('/api/todos', async(req, res) => {
         // make a sql query using pg.Client() to select * from todos
         const result = await client.query(`
             SELECT * from todos
-            ORDER BY $1;
-        `, [req.body.id]);
+            WHERE user_id = $1
+            ORDER BY $2;
+        `, [req.userId, req.body.id]);
 
         // respond to the client with that data
         res.json(result.rows);
@@ -77,10 +78,10 @@ app.get('/api/todos', async(req, res) => {
 app.post('/api/todos', async(req, res) => {
     try {
         const result = await client.query(`
-            INSERT into todos (task, complete)
-            VALUES ($1, $2)
+            INSERT into todos (task, user_id, complete)
+            VALUES ($1, $2, $3)
             RETURNING *`,
-        [req.body.task, false]
+        [req.body.task, req.userId, false]
         );
         res.json(result.rows[0]);
     }

@@ -1,22 +1,27 @@
 module.exports = [
     {
         task: 'Finish knitting stocking for Arlo',
-        complete: true
+        complete: true,
+        user_id: 1
     },
     {
         task: 'Set up time to chat with Amy',
-        complete: false
+        complete: false,
+        user_id: 1
     },
     {
         task: 'Plan next hike!',
-        complete: false
+        complete: false,
+        user_id: 1
     },
     {
         task: 'Watch SQL tutorials',
-        complete: false
+        complete: false,
+        user_id: 1
     },
     {
         task: 'Revisit old code challenges',
-        complete: false
+        complete: false,
+        user_id: 1
     }
 ];
