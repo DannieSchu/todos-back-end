@@ -112,7 +112,7 @@ app.put('/api/todos/:id', async(req, res) => {
     }
 });
 
-app.delete('api/todos/:id', async(req, res) => {
+app.delete('/api/todos/:id', async(req, res) => {
     try {
         const result = await client.query(`
             DELETE from todos 
